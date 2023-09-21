@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>es module</title>
+
+    <style>
+        pre {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h2>es modules</h2>
+
+    <p>
+        내가 사용하려고 만든 es module들
+        아래와 같이 사용할 수 있음
+    </p>
+    <pre>
+        
+        코드 예시
+
+        &#60;script type="module">
+            import {ClickOnceButton} from 'https://redlasha.github.io/esm/click-once-button/click-once-button.js'
+            let button = new ClickOnceButton();
+            button.text = '테스트버튼'
+            button.clickonce = () => {
+                alert('test')
+            }
+            button.buttonstyle = 'color: red;';
+            document.body.appendChild(button)
+        &#60;/script>
+    </pre>
+
+    <ul>
+        <li><a href="/esm/click-once-button">click once button</a></li>
+    </ul>
+    
+
+</body>
+</html>
