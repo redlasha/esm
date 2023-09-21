@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        button, click-once-button {
+            display: block;
+            margin: 10px;
+        }
+        form {
+            border: 1px solid black;
+        }
+        span {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const delay2 = (seconds) => {
+           return new Promise((resolve, reject) =>{
+               setTimeout(() => resolve(), seconds * 1000);
+           })
+        }
+    </script>
+
+    <h2>클릭한번만 할 수 있는 ClickOnceButton 예제</h2>
+    <p>한번에 한번만 클릭되며, function이 종료되면 다시 click event로 설정한다. </p>
+    <hr>
+
+    <h3>button과 js를 사용해서 구현하는 기존 방법</h3>
+    
+    <!-- case 0 -->
+    <button id="btn">[case 0] 그냥 버튼 with js</button>
+
+    <script>
+        // case 0
+        const bt = document.getElementById('btn');
+        const func = async () => {
+            try {
+                console.log('[case 0]', 'start click delay 2 sec')
+                await delay2(2);
+                console.log('[case 0]', 'finish case 0')
+            } finally {
+                bt.addEventListener('click', func, {once: true});
+            }
+        }
+
+        bt.addEventListener('click', func, {once: true});
+
+        let case1Func = async () => { 
+                            console.log('[case 1]', 'start click delay 2 sec');  
+                            await delay2(2); 
+                            console.log('[case 1]', 'finish case 0') 
+                        }
+    </script>
+
+    <hr>
+
+    <h3>ClickOnceButton을 사용하는 여러가지 방법들</h3>
+
+    <!-- case 1 -->
+    <click-once-button 
+        clickonce="(async () => { console.log('[case 1]', 'start click delay 2 sec');  await delay2(2); console.log('[case 1]', 'finish case 0') })()"
+        buttonstyle="color: red;"
+        text="[case 1] 문자열로 만든 버튼" ></click-once-button>
+
+    <!-- case 1-2 -->
+    <click-once-button 
+        clickonce="case1Func();"
+        buttonstyle="color: red;"
+        text="[case 1] 문자열로 만든 버튼 2" ></click-once-button>
+
+    
+    <!-- form 안의 button 확인 -->
+    <h3 id="form-msg">기타: 아래는 FORM 영역입니다. </h3>
+    <form action="/test">
+        <span>FORM 안에 click-once-button이 있어도 form action이 실행되지 않음</span>
+        <click-once-button 
+            clickonce="case1Func();"
+            buttonstyle="color: green; font-weight: bold;"
+            text="ClickOnceButton" ></click-once-button>
+
+        <span>FORM 안에 button은 submit처럼 사용됨. 기본 타입이 submit이어서임</span>
+        <button>그냥 버튼 .. 은 /test로 이동함</button> 
+
+        <span>button 타입이 이동안함</span>
+        <button type="button">type = button</button> 
+
+        <span>a link & href=javascript; 를 사용해도 이동안함</span>
+        <a href="javascript:;" >a link</a> 
+    </form>
+
+
+    <!-- script~~ -->
+    <script type="module" src="click-once-button.js"></script>
+    <script type="module">
+        import {ClickOnceButton, delay} from './click-once-button.js'
+
+        // case 2
+        let custom2 = document.createElement('click-once-button');
+        custom2.text = '[case 2] createElement로 만든 버튼'
+        custom2.clickonce = async () => {
+            console.log('[case 2]', 'start click delay 2 sec')
+            await delay(2)
+            console.log('[case 2]', 'finish case 2')
+        }
+        // text button style
+        custom2.buttonstyle = 'color: blue;';
+        document.getElementById('form-msg').before(custom2);
+
+        // case 3
+        let btn3 = new ClickOnceButton();
+        btn3.text = '[case 3] new 생성자로 만든 버튼'
+        btn3.clickonce = async () => {
+            console.log('[case 3]', 'start click delay 2 sec')
+            await delay(2)
+            console.log('[case 3]', 'finish case 3')
+        }
+        // object button style
+        btn3.buttonstyle = {
+            color: 'black',
+            backgroundColor: 'lightblue'
+        };
+
+        document.getElementById('form-msg').before(btn3);
+
+    </script>
+</body>
+</html>
