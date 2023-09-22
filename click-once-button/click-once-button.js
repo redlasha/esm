@@ -38,7 +38,7 @@ export class ClickOnceButton extends HTMLElement {
      * @type {string}
      * @private
      */
-    _loading = LOADING_MODE.FailToLoad;
+    _loading = LOADING_MODE.FailFinished;
 
     constructor() {
         super();
