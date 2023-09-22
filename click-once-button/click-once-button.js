@@ -1,3 +1,11 @@
+/**
+ * click once button loading mode
+ * @type {{EveryFinished: string, FailToLoad: string}}
+ */
+export const LOADING_MODE = {
+    FailFinished : 'FailFinished',
+    EveryFinished : 'EveryFinished'
+}
 
 /**
  * click once를 적용하는 custom html element
@@ -8,17 +16,29 @@
  * 2. document.createElement('click-once-button')
  * 
  * 3. 또는 import ~ 후 let btn = new ClickOnceButton()
- * 
+ *
+ *
+ *
  * attributes 설명
  * - clickonce : function
  * - buttonstyle : 내부 버튼의 style
  * - text : 버튼의 텍스트
+ * - loading : EveryFinished를 키로 입력하면 매번 다시 호출하게 됨
  */
 export class ClickOnceButton extends HTMLElement {
     _clickonce;
     _text;
     _style;
     _button;
+
+    /**
+     * MODE.FailToLoad - error 발생시에만 다시 click 가능하게 함. 예: request, regist 등
+     * MODE.EveryFinished - error 또는 성공시에 다시 click 가능하게 함. 예: download, text 등
+     *
+     * @type {string}
+     * @private
+     */
+    _loading = LOADING_MODE.FailToLoad;
 
     constructor() {
         super();
@@ -41,6 +61,7 @@ export class ClickOnceButton extends HTMLElement {
         if (this._clickonce) {
             this._setClickOnce();
         }
+
     }
 
     disconnectedCallback() {
@@ -48,7 +69,7 @@ export class ClickOnceButton extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["clickonce", "text", "buttonstyle"];
+        return ["clickonce", "text", "buttonstyle", "loading"];
     }
 
     _setText() {
@@ -82,9 +103,15 @@ export class ClickOnceButton extends HTMLElement {
                     await eval(this._clickonce)
                 } else {
                     console.warn('click once is not function. input: ' + newValue)
-                }            
+                }
+            } catch (e) {
+                if (this._loading === LOADING_MODE.FailFinished) {
+                    this._button.addEventListener('click', funcWrapper, {once: true});
+                }
             } finally {
-                this._button.addEventListener('click', funcWrapper, {once: true});
+                if (this._loading === LOADING_MODE.EveryFinished) {
+                    this._button.addEventListener('click', funcWrapper, {once: true});
+                }
             }
         };
 
@@ -103,6 +130,14 @@ export class ClickOnceButton extends HTMLElement {
     set clickonce(val) {
         this._clickonce = val;
         this._setClickOnce();
+    }
+
+    get loading() {
+        return this._loading;
+    }
+
+    set loading(val) {
+        this._loading = val;
     }
 
     get text() {
@@ -138,3 +173,6 @@ export const delay = (seconds) => {
         setTimeout(() => resolve(), seconds * SECONDS);
     })
 }
+
+// 임시로 테스트를 위해서
+window.delayFunc = delay;
