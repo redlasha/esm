@@ -97,6 +97,7 @@ export class ClickOnceButton extends HTMLElement {
         }
         const funcWrapper = async () => {
             try {
+                this._button.disabled = true;
                 if (typeof this._clickonce === 'function') {
                     await this._clickonce();
                 } else if (typeof this._clickonce === 'string') {
@@ -106,10 +107,12 @@ export class ClickOnceButton extends HTMLElement {
                 }
             } catch (e) {
                 if (this._loading === LOADING_MODE.FailFinished) {
+                    this._button.disabled = false;
                     this._button.addEventListener('click', funcWrapper, {once: true});
                 }
             } finally {
                 if (this._loading === LOADING_MODE.EveryFinished) {
+                    this._button.disabled = false;
                     this._button.addEventListener('click', funcWrapper, {once: true});
                 }
             }
